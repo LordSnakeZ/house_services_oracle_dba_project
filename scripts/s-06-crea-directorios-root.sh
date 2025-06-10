@@ -1,76 +1,95 @@
 #!/bin/bash
-# @Autor	Luis Héctor Chávez Mejía
-# @Fecha 	04/03/2025
-# @Descripcion	Creación de los directiorios para la nueva CDB
+# ╔═══════════════════════════════════════════════════════════════════════╗
+# ║ @Autores:       Chávez Mejía Luis Héctor                              ║
+# ║                 Sánchez Sánchez Santiago                               ║
+# ║ @Fecha creación: 04/03/2025                                            ║
+# ║ @Descripción:    Crea la estructura de directorios necesaria para una  ║
+# ║                  nueva Base de Datos Contenedora (CDB) en Oracle.      ║
+# ║                  - Genera carpetas para datafiles, redo logs y control ║
+# ║                    files distribuidas en varios discos.               ║
+# ║                  - Asigna permisos y propietario al usuario 'oracle'.  ║
+# ╚═══════════════════════════════════════════════════════════════════════╝
 
+# ---------------------------------------------------------------------------
+# VARIABLES DE CONFIGURACIÓN                                                  
+# ---------------------------------------------------------------------------
 
-# Disco de inicio:
-inicio=12
-num_directorios=5
-base_path="/unam/bda"
+inicio=12                 # Primer identificador numérico de disco (d12)
+num_directorios=5          # Cantidad de discos a preparar (d12...d16)
+base_path="/unam/bda"     # Ruta raíz donde se ubican los discos simulados
 
-# Asegurar que el usuario es root
-#if [ "${USER}" != "root" ]; then
-#  echo "ERROR: el script debe ser ejecutado por el usuario root"
-#  exit 1
-#fi;
+# Nota: Suponemos que las variables de entorno ORACLE_SID y ORACLE_HOME ya
+#       están definidas en el shell del usuario 'oracle'.
 
-# A. Crear directorios para los datafiles del contenedor cdb$root
+# ---------------------------------------------------------------------------
+# A. DIRECTORIOS PARA LOS DATAFILES DEL CONTENEDOR CDB$ROOT                   
+# ---------------------------------------------------------------------------
 
-for ((i=inicio; i<inicio+num_directorios; i++))
-do
-
- dir="${base_path}/d${i}"
- cd $dir
- mkdir -p oracle
- chown -R oracle:oinstall oracle
- chmod -R 750 oracle
-
+for ((i=inicio; i<inicio+num_directorios; i++)); do
+  dir="${base_path}/d${i}"
+  echo "Creando estructura base en: $dir"
+  mkdir -p "$dir/oracle"                 # Directorio /oracle dentro del disco
+  chown -R oracle:oinstall "$dir/oracle" # Propietario y grupo
+  chmod -R 750 "$dir/oracle"             # Permisos (rwx para propietario, rx para grupo)
 done
 
+# ---------------------------------------------------------------------------
+# Dentro de cada disco, crear directorio oradata/<SID> para los datafiles     
+# ---------------------------------------------------------------------------
 
-
-for ((i=inicio; i<inicio+num_directorios; i++))
-do
-
- dir="${base_path}/d${i}/oracle"
- cd $dir
- mkdir -p oradata/${ORACLE_SID^^}
- chown -R oracle:oinstall oradata
- chmod -R 750 oradata
-
+for ((i=inicio; i<inicio+num_directorios; i++)); do
+  dir="${base_path}/d${i}/oracle"
+  echo "Creando oradata para el SID ${ORACLE_SID^^} en: $dir"
+  mkdir -p "$dir/oradata/${ORACLE_SID^^}"
+  chown -R oracle:oinstall "$dir/oradata"
+  chmod -R 750 "$dir/oradata"
 done
 
-# B. Crear el directorio para la PDB pdb$seed
-dir="${base_path}/d17"
-cd $dir
-mkdir pdbseed
-chown oracle:oinstall pdbseed
-chmod 750 pdbseed
+# ---------------------------------------------------------------------------
+# B. DIRECTORIO DEDICADO PARA LA PDB SEED (pdb$seed)                          
+# ---------------------------------------------------------------------------
 
-# C. Crear directorios para Redo Log y control files
+dir="${base_path}/d17/pdbseed"
+echo "Creando directorio PDB Seed en: $dir"
+mkdir -p "$dir"
+chown oracle:oinstall "$dir"
+chmod 750 "$dir"
 
-#  ->Primera estructura (Ubicada en la FRA)
-cd /unam/bda/d11
-echo creando directorio app/oracle/oradata/${ORACLE_SID^^}
-mkdir -p app/oracle/oradata/${ORACLE_SID^^}
-chown -R oracle:oinstall app
-chmod -R 750 app
+# ---------------------------------------------------------------------------
+# C. DIRECTORIOS PARA REDO LOGS Y CONTROL FILES                               
+# ---------------------------------------------------------------------------
+# 1) Estructura en la FRA (Fast Recovery Area)                                
+# ---------------------------------------------------------------------------
 
-#  ->Segunda estructura
-cd /unam/bda/disks/d04
-mkdir -p app/oracle/oradata/${ORACLE_SID^^}
-chown -R oracle:oinstall app
-chmod -R 750 app
+fra_dir="/unam/bda/d11/app/oracle/oradata/${ORACLE_SID^^}"
+echo "Creando FRA en: $fra_dir"
+mkdir -p "$fra_dir"
+chown -R oracle:oinstall "/unam/bda/d11/app"
+chmod -R 750 "/unam/bda/d11/app"
 
-#  ->Tercera estructura
-cd /unam/bda/disks/d05
-mkdir -p app/oracle/oradata/${ORACLE_SID^^}
-chown -R oracle:oinstall app
-chmod -R 750 app
+# ---------------------------------------------------------------------------
+# 2) Segunda y tercera estructura distribuida (d04 y d05)                     
+# ---------------------------------------------------------------------------
 
-# D. Mostrar el contenido de los directorios creados
-#echo "Mostrando directorio de data files"
-#ls -l /opt/oracle/oradata
-#echo "Mostrando directorios para control files y Redo Logs"
-#ls -l /unam/bda/disks/d0*/app/oracle/oradata
+for disk in d04 d05; do
+  path="/unam/bda/disks/${disk}/app/oracle/oradata/${ORACLE_SID^^}"
+  echo "Creando estructura adicional en: $path"
+  mkdir -p "$path"
+  chown -R oracle:oinstall "/unam/bda/disks/${disk}/app"
+  chmod -R 750 "/unam/bda/disks/${disk}/app"
+done
+
+# ---------------------------------------------------------------------------
+# D. (OPCIONAL) MOSTRAR RESULTADOS                                            
+# ---------------------------------------------------------------------------
+# Descomentar las siguientes líneas para listar los directorios creados.      
+#
+# echo "\nContenido de /unam/bda/disks/d0*/app/oracle/oradata:" 
+# ls -l /unam/bda/disks/d0*/app/oracle/oradata
+#
+# echo "\nContenido de FRA:" 
+# ls -l "$fra_dir"
+
+# ---------------------------------------------------------------------------
+# FIN DEL SCRIPT                                                              
+# ---------------------------------------------------------------------------

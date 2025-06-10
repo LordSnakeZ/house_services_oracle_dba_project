@@ -1,0 +1,19 @@
+-- ╔═══════════════════════════════════════════════════════════════════════╗
+-- ║ @Autores:       Chávez Mejía Luis Héctor                             ║
+-- ║                 Sánchez Sánchez Santiago                              ║
+-- ║ @Fecha creación: dd/mm/yyyy                                           ║
+-- ║ @Descripción:    RMAN: copia mensual de la base y controlfile;        ║
+-- ║                  limpia backups obsoletos                            ║
+-- ╚═══════════════════════════════════════════════════════════════════════╝
+RUN {
+  -- Inicia copia de la base de datos completa como archivos de copia
+  BACKUP AS COPY DATABASE
+    TAG 'MONTHLY_FULL'
+    FORMAT '/unam/bda/d11/%d_IMG_%T_%U';  -- destino en FRA (/unam/bda/d11)
+
+  -- Copia el controlfile actual con etiqueta específica
+  BACKUP CURRENT CONTROLFILE TAG 'CTL_MONTHLY';
+
+  -- Elimina sin preguntar todos los backups marcados como obsoletos
+  DELETE NOPROMPT OBSOLETE;
+}

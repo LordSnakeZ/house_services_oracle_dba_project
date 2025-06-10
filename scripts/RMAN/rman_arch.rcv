@@ -1,0 +1,6 @@
+BACKUP ARCHIVELOG ALL
+  TAG 'ARCH_LOGS'
+  FORMAT '/unam/bda/d11/%d_ARCH_%t_%s_%u.arc'
+  DELETE INPUT;
+
+  
