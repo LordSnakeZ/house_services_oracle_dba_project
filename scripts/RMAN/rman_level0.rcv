@@ -1,10 +1,24 @@
+-- ╔═══════════════════════════════════════════════════════════════════════╗
+-- ║ @Autores:       Chávez Mejía Luis Héctor                             ║
+-- ║                 Sánchez Sánchez Santiago                              ║
+-- ║ @Fecha creación: dd/mm/yyyy                                           ║
+-- ║ @Descripción:    RMAN: backup semanal nivel 0 completo (comprimido)   ║
+-- ╚═══════════════════════════════════════════════════════════════════════╝
+
 RUN {
+  -- Verifica el estado de los archivelogs registrados
   CROSSCHECK ARCHIVELOG ALL;
+
+  -- Backup completo de la base (nivel 0) como backupset comprimido
   BACKUP AS COMPRESSED BACKUPSET
     INCREMENTAL LEVEL 0
     DATABASE
     TAG 'WEEKLY_L0'
     FORMAT '/unam/bda/d11/%d_L0_%T_%U.bkp';
+
+  -- Backup del controlfile con etiqueta específica
   BACKUP CURRENT CONTROLFILE TAG 'CTL_L0';
+
+  -- Elimina respaldos obsoletos sin pedir confirmación
   DELETE NOPROMPT OBSOLETE;
 }

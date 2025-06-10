@@ -1,9 +1,21 @@
+-- ╔═══════════════════════════════════════════════════════════════════════╗
+-- ║ @Autores:       Chávez Mejía Luis Héctor                             ║
+-- ║                 Sánchez Sánchez Santiago                              ║
+-- ║ @Fecha creación: dd/mm/yyyy                                           ║
+-- ║ @Descripción:    RMAN: backup incremental nivel 1 diario (comprimido) ║
+-- ╚═══════════════════════════════════════════════════════════════════════╝
+
 RUN {
+  # Realiza un backup incremental nivel 1 comprimido del database
   BACKUP AS COMPRESSED BACKUPSET
     INCREMENTAL LEVEL 1
     DATABASE
     TAG 'DAILY_L1'
-    FORMAT '/unam/bda/d11/%d_L1_%T_%U.bkp';
+    FORMAT '/unam/bda/d11/%d_L1_%T_%U.bkp';  # Ruta de backup diaria en FRA (/unam/bda/d11)
+
+  # Backup del controlfile actual con tag para identificación
   BACKUP CURRENT CONTROLFILE TAG 'CTL_L1';
+
+  # Elimina backups obsoletos sin pedir confirmación
   DELETE NOPROMPT OBSOLETE;
 }
