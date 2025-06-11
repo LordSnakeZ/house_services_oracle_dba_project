@@ -14,7 +14,6 @@ RUN {
     INCREMENTAL LEVEL 0
     DATABASE
     TAG 'WEEKLY_L0'
-    FORMAT '/unam/bda/d11/%d_L0_%T_%U.bkp';
 
   -- Backup del controlfile con etiqueta específica
   BACKUP CURRENT CONTROLFILE TAG 'CTL_L0';

@@ -7,8 +7,15 @@
 -- ║                  moduloServicios para los inserts en histórico        ║
 -- ╚═══════════════════════════════════════════════════════════════════════╝
 
+-- Crea (si no existe) en tu PDB o esquema
+CREATE SEQUENCE moduloServicios.seq_servicio
+  START WITH (SELECT NVL(MAX(servicio_id),0)+1 FROM moduloServicios.servicio)
+  INCREMENT BY 1
+  NOCACHE
+  NOCYCLE;
+
 CREATE SEQUENCE moduloServicios.SEQ_HISTORICO
-  START WITH 1
+  START WITH (SELECT NVL(MAX(HISTORICO_STATUS_SERVICIO_ID),0)+1 FROM moduloServicios.HISTORICO_STATUS_SERVICIO)
   INCREMENT BY 1
   NOCACHE
   NOCYCLE;

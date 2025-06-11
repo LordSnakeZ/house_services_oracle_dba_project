@@ -11,7 +11,6 @@ RUN {
     INCREMENTAL LEVEL 1
     DATABASE
     TAG 'DAILY_L1'
-    FORMAT '/unam/bda/d11/%d_L1_%T_%U.bkp';  # Ruta de backup diaria en FRA (/unam/bda/d11)
 
   # Backup del controlfile actual con tag para identificación
   BACKUP CURRENT CONTROLFILE TAG 'CTL_L1';

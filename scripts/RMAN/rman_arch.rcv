@@ -8,6 +8,5 @@ RUN {
   -- Respaldar todos los archivelogs generados hasta el momento
   BACKUP ARCHIVELOG ALL
     TAG 'ARCH_LOGS'
-    FORMAT '/unam/bda/d11/%d_ARCH_%t_%s_%u.arc'  -- usa la FRA en d11 (coincide con scripts previos)
     DELETE INPUT;  -- elimina los archivos de origen tras el backup
 }
