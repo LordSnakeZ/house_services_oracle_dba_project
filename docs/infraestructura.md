@@ -15,8 +15,8 @@
 
 | Module | Description | Schema Owner |
 |--------|-------------|--------------|
-| USUARIOS | Manages suppliers, clients and supporting catalogs | `adminUsuario` |
-| SERVICIO | Manages service lifecycle and payments | `adminServicios` |
+| USUARIOS | Manages suppliers, clients and supporting catalogs | `moduloUsuario` |
+| SERVICIO | Manages service lifecycle and payments | `moduloServicios` |
 
 ## Table Distribution by Module
 
@@ -42,7 +42,3 @@
 | EVIDENCIA | SERVICIO |
 | STATUS_SERVICIO | SERVICIO |
 | HISTORICO_STATUS_SERVICIO | SERVICIO |
-
-## Next Steps
-
-See each dedicated document for tablespaces, indexes, and backup strategy.
